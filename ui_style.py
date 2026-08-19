@@ -225,17 +225,54 @@ h2,h3{font-weight:850 !important;}
 }
 .stButton > button[kind="primary"]:hover{color:#fff !important;filter:brightness(1.04);}
 
-/* Metrics */
+/* Metrics: responsive, full value + unit, never ellipsized */
 div[data-testid="stMetric"]{
   background:linear-gradient(180deg,#fff 0%,#fff8f7 100%);
   border:1px solid var(--line);
   border-top:3px solid var(--red-700);
-  padding:14px 15px;
+  padding:13px 14px 14px;
+  min-height:112px;
   border-radius:16px;
   box-shadow:0 8px 22px rgba(122,9,23,.06);
+  overflow:visible !important;
+  min-width:0;
 }
-div[data-testid="stMetricLabel"] p{color:#80676d;font-weight:700;}
-div[data-testid="stMetricValue"]{color:var(--red-900);font-weight:900;}
+div[data-testid="stMetricLabel"]{
+  overflow:visible !important;
+  margin-bottom:5px;
+}
+div[data-testid="stMetricLabel"] p{
+  color:#80676d;
+  font-weight:700;
+  font-size:clamp(.82rem,.9vw,1rem) !important;
+  line-height:1.2 !important;
+  white-space:nowrap !important;
+}
+div[data-testid="stMetricValue"]{
+  color:var(--red-900);
+  font-weight:900;
+  overflow:visible !important;
+  max-width:none !important;
+  width:100% !important;
+}
+div[data-testid="stMetricValue"] > div,
+div[data-testid="stMetricValue"] p,
+div[data-testid="stMetricValue"] span{
+  color:var(--red-900) !important;
+  font-size:clamp(1.45rem,1.85vw,2.15rem) !important;
+  line-height:1.12 !important;
+  font-weight:900 !important;
+  letter-spacing:-.035em !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  max-width:none !important;
+}
+div[data-testid="stMetricDelta"]{
+  font-size:.78rem !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+}
 
 /* Inputs */
 .stTextInput input,
@@ -296,9 +333,23 @@ div[data-testid="stMetricValue"]{color:var(--red-900);font-weight:900;}
   text-align:center;
 }
 
+@media (max-width: 1180px){
+  div[data-testid="stMetricValue"] > div,
+  div[data-testid="stMetricValue"] p,
+  div[data-testid="stMetricValue"] span{
+    font-size:clamp(1.25rem,1.7vw,1.7rem) !important;
+  }
+}
+
 @media (max-width: 980px){
   .flow-wrap{grid-template-columns:1fr 1fr;}
   .hero-title{font-size:34px;}
+  div[data-testid="stMetric"]{min-height:100px;padding:11px 12px;}
+  div[data-testid="stMetricValue"] > div,
+  div[data-testid="stMetricValue"] p,
+  div[data-testid="stMetricValue"] span{
+    font-size:1.35rem !important;
+  }
 }
 </style>
         """,
