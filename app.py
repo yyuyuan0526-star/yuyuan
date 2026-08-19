@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+import runpy
 import streamlit as st
 import decision_support as _decision_support
 from ui_style import apply_competition_theme, render_hero, render_system_flow
@@ -13,8 +15,22 @@ from competition_views import (
 # -----------------------------------------------------------------------------
 # National-competition UI wrapper.
 # core_app.py retains the validated V2 model/business logic.
+# This wrapper is intentionally reversible so Streamlit reruns stay stable.
 # -----------------------------------------------------------------------------
+_original_title = st.title
 _original_caption = st.caption
+_original_prescription_execution = getattr(
+    _decision_support,
+    "_agrigel_original_prescription_execution",
+    _decision_support.prescription_execution,
+)
+_original_economic_scenario = getattr(
+    _decision_support,
+    "_agrigel_original_economic_scenario",
+    _decision_support.economic_scenario,
+)
+_decision_support._agrigel_original_prescription_execution = _original_prescription_execution
+_decision_support._agrigel_original_economic_scenario = _original_economic_scenario
 _caption_count = {"n": 0}
 
 
@@ -45,14 +61,6 @@ def _competition_caption(body, *args, **kwargs):
     return _original_caption(body, *args, **kwargs)
 
 
-# -----------------------------------------------------------------------------
-# Inject presentation views at the exact point where the validated business
-# functions are called. This avoids changing the model/decision algorithms.
-# -----------------------------------------------------------------------------
-_original_prescription_execution = _decision_support.prescription_execution
-_original_economic_scenario = _decision_support.economic_scenario
-
-
 def _competition_prescription_execution(formula, planting_density_per_mu, growth_stage, soil_clay_pct):
     execution = _original_prescription_execution(
         formula, planting_density_per_mu, growth_stage, soil_clay_pct
@@ -75,11 +83,18 @@ def _competition_economic_scenario(*args, **kwargs):
     return econ
 
 
-# Streamlit surface overrides.
+# Activate the competition presentation layer for this rerun only.
 st.title = _competition_title
 st.caption = _competition_caption
 _decision_support.prescription_execution = _competition_prescription_execution
 _decision_support.economic_scenario = _competition_economic_scenario
 
-# Execute the validated V2 application logic under the V3 competition UI layer.
-import core_app  # noqa: E402,F401
+try:
+    # run_path guarantees core_app executes on every Streamlit rerun.
+    runpy.run_path(str(Path(__file__).with_name("core_app.py")), run_name="__main__")
+finally:
+    # Restore global module functions to prevent wrapper stacking on future reruns.
+    st.title = _original_title
+    st.caption = _original_caption
+    _decision_support.prescription_execution = _original_prescription_execution
+    _decision_support.economic_scenario = _original_economic_scenario
