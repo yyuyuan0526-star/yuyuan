@@ -45,19 +45,35 @@ _widget_values = {}
 
 
 def _apply_metric_overflow_fix():
-    """Keep metric numbers and units visible instead of Streamlit ellipsis."""
+    """Keep KPI values and units fully inside their competition-dashboard cards."""
     st.markdown(
         r"""
 <style>
-/* Metric card: never replace value/unit with ellipsis. */
+/* Metric cards: compact typography, full value + unit, no overlap. */
 div[data-testid="stMetric"]{
   min-width:0 !important;
-  overflow:visible !important;
+  min-height:104px !important;
+  padding:12px 13px 13px !important;
+  overflow:hidden !important;
 }
+
+div[data-testid="stMetricLabel"]{
+  overflow:visible !important;
+  margin-bottom:4px !important;
+}
+div[data-testid="stMetricLabel"] p{
+  font-size:.95rem !important;
+  line-height:1.2 !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+}
+
 div[data-testid="stMetricValue"]{
   width:100% !important;
-  max-width:none !important;
-  overflow:visible !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  overflow:hidden !important;
   text-overflow:clip !important;
   white-space:nowrap !important;
 }
@@ -66,27 +82,26 @@ div[data-testid="stMetricValue"] *{
   overflow:visible !important;
   text-overflow:clip !important;
   white-space:nowrap !important;
-  font-size:clamp(1.55rem,2.15vw,2.45rem) !important;
-  line-height:1.15 !important;
-  letter-spacing:-0.025em !important;
-}
-div[data-testid="stMetricLabel"]{
-  overflow:visible !important;
-}
-div[data-testid="stMetricLabel"] p{
-  white-space:normal !important;
-  overflow:visible !important;
-  text-overflow:clip !important;
-  line-height:1.3 !important;
+  font-size:1.38rem !important;
+  line-height:1.08 !important;
+  letter-spacing:-0.035em !important;
+  font-weight:900 !important;
 }
 
-/* On narrower screens, keep all four KPI units visible by reducing the value size. */
-@media (max-width:1200px){
-  div[data-testid="stMetric"]{padding:12px 12px !important;}
-  div[data-testid="stMetricValue"] *{font-size:1.72rem !important;}
+/* Laptop / projection widths used in competition presentation. */
+@media (max-width:1450px){
+  div[data-testid="stMetricValue"] *{
+    font-size:1.28rem !important;
+    letter-spacing:-0.04em !important;
+  }
 }
-@media (max-width:900px){
-  div[data-testid="stMetricValue"] *{font-size:1.55rem !important;}
+@media (max-width:1250px){
+  div[data-testid="stMetric"]{padding:11px 11px 12px !important;min-height:98px !important;}
+  div[data-testid="stMetricLabel"] p{font-size:.86rem !important;}
+  div[data-testid="stMetricValue"] *{font-size:1.16rem !important;}
+}
+@media (max-width:980px){
+  div[data-testid="stMetricValue"] *{font-size:1.05rem !important;}
 }
 </style>
         """,
