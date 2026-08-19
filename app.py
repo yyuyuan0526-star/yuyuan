@@ -44,11 +44,62 @@ _caption_count = {"n": 0}
 _widget_values = {}
 
 
+def _apply_metric_overflow_fix():
+    """Keep metric numbers and units visible instead of Streamlit ellipsis."""
+    st.markdown(
+        r"""
+<style>
+/* Metric card: never replace value/unit with ellipsis. */
+div[data-testid="stMetric"]{
+  min-width:0 !important;
+  overflow:visible !important;
+}
+div[data-testid="stMetricValue"]{
+  width:100% !important;
+  max-width:none !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  white-space:nowrap !important;
+}
+div[data-testid="stMetricValue"] *{
+  max-width:none !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  white-space:nowrap !important;
+  font-size:clamp(1.55rem,2.15vw,2.45rem) !important;
+  line-height:1.15 !important;
+  letter-spacing:-0.025em !important;
+}
+div[data-testid="stMetricLabel"]{
+  overflow:visible !important;
+}
+div[data-testid="stMetricLabel"] p{
+  white-space:normal !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  line-height:1.3 !important;
+}
+
+/* On narrower screens, keep all four KPI units visible by reducing the value size. */
+@media (max-width:1200px){
+  div[data-testid="stMetric"]{padding:12px 12px !important;}
+  div[data-testid="stMetricValue"] *{font-size:1.72rem !important;}
+}
+@media (max-width:900px){
+  div[data-testid="stMetricValue"] *{font-size:1.55rem !important;}
+}
+</style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def _competition_title(*args, **kwargs):
     # core_app calls set_page_config before st.title, so CSS injection is safe here.
     apply_competition_theme()
     apply_national_extensions()
     apply_environment_extensions()
+    _apply_metric_overflow_fix()
     st.sidebar.markdown(
         """
 <div class="sidebar-brand">
